@@ -1,18 +1,18 @@
 [
   {
-    "file": "กิจการอันตราย.kml",
     "name": "กิจการอันตราย",
+    "file": "กิจการอันตราย.kml",
+    "group": "งานสาธารณสุข",
     "color": "#ff0000",
-    "weight": 2,
-    "fillOpacity": 0.6,
+    "opacity": 0.6,
     "visible": true
   },
   {
-    "file": "ข้อมูลเส้นทางเบื้องต้น.kml",
-    "name": "ข้อมูลเส้นทางเบื้องต้น",
-    "color": "#0000ff",
-    "weight": 3,
-    "fillOpacity": 0.5,
+    "name": "เกษตร",
+    "file": "เกษตร.kml",
+    "group": "ข้อมูลพื้นฐาน",
+    "color": "#00aa00",
+    "opacity": 0.8,
     "visible": false
   }
 ]
