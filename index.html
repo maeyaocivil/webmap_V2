@@ -1,277 +1,672 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>OneMap - เทศบาลตำบลแม่ยาว</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <style>
-  html, body { height: 100%; margin: 0; font-family: "TH Sarabun New", sans-serif; }
-  #map { height: 100%; width: 100%; }
 
-  /* โลโก้ */
-  .logo {
-    position: absolute;
-    top: 5px;
-    left: 10px;
-    z-index: 1500;
-    background: white;
-    border-radius: 8px;
-    padding: 3px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
-  }
-  .logo img { width: 70px; height: 70px; cursor: pointer; }
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "TH Sarabun New", sans-serif;
+}
 
-  /* ย้ายปุ่ม + - ลงจากโลโก้ */
-  .leaflet-top.leaflet-left {
-    top: 90px !important;
-  }
+#map {
+  height: 100%;
+  width: 100%;
+}
 
-  /* เข็มทิศ */
-  .compass {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1500;
-    background: white;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    box-shadow: 0 0 6px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .compass img { width: 40px; height: 40px; }
+/* โลโก้ */
 
-  /* ปุ่มเปิด/ปิดชั้นข้อมูล */
-  .toggle-panel-btn {
-    position: absolute;
-    top: 70px;
-    right: 10px;
-    z-index: 1500;
-    background: white;
-    border: 1px solid #999;
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-size: 15px;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
+.logo{
+  position:absolute;
+  top:5px;
+  left:10px;
+  z-index:1500;
+  background:white;
+  border-radius:8px;
+  padding:3px;
+  box-shadow:0 0 5px rgba(0,0,0,0.3);
+}
 
-  /* กล่องชั้นข้อมูล */
-  .layer-panel {
-    position: absolute;
-    top: 110px;
-    right: 10px;
-    z-index: 1400;
-    background: white;
-    border: 1px solid #aaa;
-    border-radius: 8px;
-    padding: 8px;
-    width: 270px;
-    max-height: 420px;
-    overflow-y: auto;
-    display: none;
-    box-shadow: 0 0 6px rgba(0,0,0,0.2);
-  }
+.logo img{
+  width:70px;
+  height:70px;
+  cursor:pointer;
+}
 
-  .slider-panel {
-    background: rgba(255,255,255,0.9);
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 3px 5px;
-    margin-top: 3px;
-    font-size: 14px;
-  }
+/* ย้ายปุ่ม + - */
 
-  .slider-panel label { display:block; margin:3px 0 0 0; font-size:13px; }
-  .slider-panel input[type="range"] {
-    width:100%;
-    height:3px;
-  }
+.leaflet-top.leaflet-left{
+  top:90px !important;
+}
 
-  /* พิกัดและปุ่มล่าง */
-  .bottom-left-controls {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    z-index: 1000;
-    display: flex;
-    gap: 10px;
-  }
-  button {
-    background: white;
-    border: 1px solid #999;
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-size: 15px;
-    cursor: pointer;
-  }
-  button:hover { background: #e8e8e8; }
-  .coordinate {
-    position: absolute;
-    bottom: 10px;
-    left: 270px;
-    z-index: 1000;
-    background: white;
-    padding: 5px 10px;
-    border-radius: 6px;
-    border: 1px solid #999;
-    font-size: 16px;
-  }
+/* เข็มทิศ */
 
-  .leaflet-control-scale {
-    right: 10px !important;
-    left: auto !important;
-    bottom: 10px !important;
-  }
+.compass{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:1500;
+  background:white;
+  border-radius:50%;
+  width:50px;
+  height:50px;
+  box-shadow:0 0 6px rgba(0,0,0,0.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.compass img{
+  width:40px;
+  height:40px;
+}
+
+/* ปุ่ม panel */
+
+.toggle-panel-btn{
+  position:absolute;
+  top:70px;
+  right:10px;
+  z-index:1500;
+  background:white;
+  border:1px solid #999;
+  border-radius:6px;
+  padding:5px 10px;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* panel */
+
+.layer-panel{
+  position:absolute;
+  top:110px;
+  right:10px;
+  z-index:1400;
+  background:white;
+  border:1px solid #aaa;
+  border-radius:8px;
+  padding:8px;
+  width:270px;
+  max-height:420px;
+  overflow-y:auto;
+  display:none;
+  box-shadow:0 0 6px rgba(0,0,0,0.2);
+}
+
+.slider-panel{
+  background:rgba(255,255,255,0.9);
+  border:1px solid #ccc;
+  border-radius:6px;
+  padding:3px 5px;
+  margin-top:3px;
+  font-size:14px;
+}
+
+.slider-panel label{
+  display:block;
+  margin:3px 0 0 0;
+  font-size:13px;
+}
+
+.slider-panel input[type="range"]{
+  width:100%;
+  height:3px;
+}
+
+/* ปุ่มล่าง */
+
+.bottom-left-controls{
+  position:absolute;
+  bottom:10px;
+  left:10px;
+  z-index:1000;
+  display:flex;
+  gap:10px;
+}
+
+button{
+  background:white;
+  border:1px solid #999;
+  border-radius:6px;
+  padding:5px 10px;
+  font-size:15px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#e8e8e8;
+}
+
+/* coordinate */
+
+.coordinate{
+  position:absolute;
+  bottom:10px;
+  left:270px;
+  z-index:1000;
+  background:white;
+  padding:5px 10px;
+  border-radius:6px;
+  border:1px solid #999;
+  font-size:16px;
+}
+
+/* scale */
+
+.leaflet-control-scale{
+  right:10px !important;
+  left:auto !important;
+  bottom:10px !important;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="logo" onclick="window.open('https://www.maeyao.go.th/', '_blank')">
-  <img src="assets/logo.png">
+<div class="logo"
+onclick="window.open('https://www.maeyao.go.th/','_blank')">
+
+<img src="assets/logo.png">
+
 </div>
 
-<div class="compass"><img src="assets/compass.png"></div>
-<button class="toggle-panel-btn" onclick="toggleLayerPanel()">ชั้นข้อมูล</button>
+<div class="compass">
+<img src="assets/compass.png">
+</div>
+
+<button class="toggle-panel-btn"
+onclick="toggleLayerPanel()">
+
+ชั้นข้อมูล
+
+</button>
 
 <div class="layer-panel" id="layerPanel">
-  <b>แผนที่ฐาน</b><br>
-  <label><input type="radio" name="base" value="osm" checked> OpenStreetMap</label><br>
-  <label><input type="radio" name="base" value="sat"> Google Satellite</label>
-  <hr>
-  <b>ชั้นข้อมูล</b><div id="layerList"></div>
+
+<b>แผนที่ฐาน</b><br>
+
+<label>
+<input type="radio" name="base" value="osm" checked>
+OpenStreetMap
+</label>
+
+<br>
+
+<label>
+<input type="radio" name="base" value="sat">
+Google Satellite
+</label>
+
+<hr>
+
+<b>ชั้นข้อมูล</b>
+
+<div id="layerList"></div>
+
 </div>
 
 <div class="bottom-left-controls">
-  <button id="resetView">รีเซตมุมมอง</button>
-  <button id="locateMe">ตำแหน่งฉัน</button>
+
+<button id="resetView">
+รีเซตมุมมอง
+</button>
+
+<button id="locateMe">
+ตำแหน่งฉัน
+</button>
+
 </div>
 
-<div class="coordinate" id="coordinate">E: -, N: -</div>
+<div class="coordinate" id="coordinate">
+
+E: -, N: -
+
+</div>
+
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-omnivore/0.3.4/leaflet-omnivore.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
 
 <script>
-const map = L.map('map',{center:[19.95,99.80],zoom:12});
-const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
-const sat=L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{maxZoom:20});
-document.querySelectorAll('input[name="base"]').forEach(r=>{
-  r.addEventListener('change',()=>{
-    map.removeLayer(osm); map.removeLayer(sat);
-    if(r.value==='osm')osm.addTo(map); else sat.addTo(map);
-  });
+
+const map = L.map('map',{
+  center:[19.95,99.80],
+  zoom:12
 });
 
-const overlayLayers={};
-fetch("layers/layers.json")
+const osm = L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{maxZoom:19}
+).addTo(map);
+
+const sat = L.tileLayer(
+'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+{maxZoom:20}
+);
+
+document.querySelectorAll('input[name="base"]')
+.forEach(r=>{
+
+  r.addEventListener('change',()=>{
+
+    map.removeLayer(osm);
+    map.removeLayer(sat);
+
+    if(r.value==='osm'){
+      osm.addTo(map);
+    }else{
+      sat.addTo(map);
+    }
+
+  });
+
+});
+
+const overlayLayers = {};
+
+fetch("layers/config.json")
+
 .then(r=>r.json())
+
 .then(files=>{
-  const layerList=document.getElementById("layerList");
-  files.forEach((file,i)=>{
-    const name=file.replace(".kml","");
-    const color=getColor(i);
-    const layer=omnivore.kml("layers/"+file,null,L.geoJson(null,{
-      style:()=>({color:color,weight:2,fillColor:color,fillOpacity:0.6}),
-      pointToLayer:(f,latlng)=>L.circleMarker(latlng,{radius:6,color:color,fillColor:color,fillOpacity:0.9})
-    }));
-    overlayLayers[name]=layer;
 
-    // แยกประเภทข้อมูล
-    const isPoint = name.includes("สถานที่") || name.includes("เกษตร") || name.includes("แหล่งน้ำ") || name.includes("จุด") || name.includes("ตรวจ") || name.includes("ศึกษา");
+  const layerList =
+  document.getElementById("layerList");
 
-    const div=document.createElement("div");
+  files.forEach((cfg,i)=>{
 
-    if (!isPoint) {
+    const file  = cfg.file;
+    const name  = cfg.name;
+    const color = cfg.color || getColor(i);
+
+    const layer = omnivore.kml(
+
+      "layers/" + file,
+
+      null,
+
+      L.geoJson(null,{
+
+        style:()=>({
+
+          color:color,
+          weight:cfg.weight || 2,
+          fillColor:color,
+          fillOpacity:cfg.fillOpacity || 0.6
+
+        }),
+
+        pointToLayer:(f,latlng)=>
+
+        L.circleMarker(latlng,{
+
+          radius:6,
+          color:color,
+          fillColor:color,
+          fillOpacity:0.9
+
+        })
+
+      })
+
+    );
+
+    overlayLayers[name] = layer;
+
+    const isPoint =
+
+      name.includes("สถานที่") ||
+      name.includes("เกษตร") ||
+      name.includes("แหล่งน้ำ") ||
+      name.includes("จุด") ||
+      name.includes("ตรวจ") ||
+      name.includes("ศึกษา");
+
+    const div = document.createElement("div");
+
+    if(!isPoint){
+
       div.innerHTML = `
-        <label><input type="checkbox" id="chk_${i}"> ${name}</label>
-        <div id="slider_${i}" class="slider-panel" style="display:none;">
-          <label>ความหนา: <span id="valLine_${i}">2</span></label>
-          <input type="range" min="1" max="10" value="2" step="1">
-          <label>ความทึบ: <span id="valFill_${i}">60%</span></label>
-          <input type="range" min="10" max="100" value="60" step="10">
-        </div>`;
-    } else {
+
+      <label>
+      <input type="checkbox" id="chk_${i}">
+      ${name}
+      </label>
+
+      <div id="slider_${i}"
+      class="slider-panel"
+      style="display:none;">
+
+      <label>
+
+      ความหนา:
+      <span id="valLine_${i}">
+      ${cfg.weight || 2}
+      </span>
+
+      </label>
+
+      <input type="range"
+      min="1"
+      max="10"
+      value="${cfg.weight || 2}"
+      step="1">
+
+      <label>
+
+      ความทึบ:
+      <span id="valFill_${i}">
+      ${(cfg.fillOpacity || 0.6)*100}%
+      </span>
+
+      </label>
+
+      <input type="range"
+      min="10"
+      max="100"
+      value="${(cfg.fillOpacity || 0.6)*100}"
+      step="10">
+
+      </div>
+
+      `;
+
+    }else{
+
       div.innerHTML = `
-        <label><input type="checkbox" id="chk_${i}"> ${name}</label>
-        <div id="slider_${i}" class="slider-panel" style="display:none;">
-          <label>ขนาด: <span id="valPoint_${i}">6</span></label>
-          <input type="range" min="1" max="10" value="6" step="1">
-          <label>ความทึบ: <span id="valFill_${i}">90%</span></label>
-          <input type="range" min="10" max="100" value="90" step="10">
-        </div>`;
+
+      <label>
+      <input type="checkbox" id="chk_${i}">
+      ${name}
+      </label>
+
+      <div id="slider_${i}"
+      class="slider-panel"
+      style="display:none;">
+
+      <label>
+
+      ขนาด:
+      <span id="valPoint_${i}">
+      6
+      </span>
+
+      </label>
+
+      <input type="range"
+      min="1"
+      max="10"
+      value="6"
+      step="1">
+
+      <label>
+
+      ความทึบ:
+      <span id="valFill_${i}">
+      90%
+      </span>
+
+      </label>
+
+      <input type="range"
+      min="10"
+      max="100"
+      value="90"
+      step="10">
+
+      </div>
+
+      `;
+
     }
 
     layerList.appendChild(div);
 
-    const chk=div.querySelector("input[type='checkbox']");
-    const sliders=div.querySelectorAll("input[type='range']");
-    const box=document.getElementById(`slider_${i}`);
+    const chk =
+    div.querySelector("input[type='checkbox']");
+
+    const sliders =
+    div.querySelectorAll("input[type='range']");
+
+    const box =
+    document.getElementById(`slider_${i}`);
+
+    if(cfg.visible){
+
+      chk.checked = true;
+
+      map.addLayer(layer);
+
+      box.style.display='block';
+
+    }
 
     chk.addEventListener("change",()=>{
-      if(chk.checked){map.addLayer(layer);box.style.display='block';}
-      else{map.removeLayer(layer);box.style.display='none';}
+
+      if(chk.checked){
+
+        map.addLayer(layer);
+
+        box.style.display='block';
+
+      }else{
+
+        map.removeLayer(layer);
+
+        box.style.display='none';
+
+      }
+
     });
 
-    sliders.forEach(s=>s.addEventListener("input",updateStyle));
+    sliders.forEach(s=>
+      s.addEventListener("input",updateStyle)
+    );
 
     function updateStyle(){
+
       layer.eachLayer(l=>{
+
         if(l instanceof L.Polygon){
-          l.setStyle({fillOpacity:parseFloat(sliders[1].value)/100,weight:parseInt(sliders[0].value)});
-        } else if(l instanceof L.Polyline && !(l instanceof L.Polygon)){
-          l.setStyle({weight:parseInt(sliders[0].value)});
-        } else if(l instanceof L.CircleMarker){
-          l.setRadius(parseInt(sliders[0].value));
-          l.setStyle({fillOpacity:parseFloat(sliders[1].value)/100});
+
+          l.setStyle({
+
+            fillOpacity:
+            parseFloat(sliders[1].value)/100,
+
+            weight:
+            parseInt(sliders[0].value)
+
+          });
+
         }
+
+        else if(
+          l instanceof L.Polyline &&
+          !(l instanceof L.Polygon)
+        ){
+
+          l.setStyle({
+
+            weight:
+            parseInt(sliders[0].value)
+
+          });
+
+        }
+
+        else if(l instanceof L.CircleMarker){
+
+          l.setRadius(
+            parseInt(sliders[0].value)
+          );
+
+          l.setStyle({
+
+            fillOpacity:
+            parseFloat(sliders[1].value)/100
+
+          });
+
+        }
+
       });
-      const vals = box.querySelectorAll("span[id^='val']");
-      if (vals.length) {
-        vals.forEach((v, idx) => {
+
+      const vals =
+      box.querySelectorAll("span[id^='val']");
+
+      if(vals.length){
+
+        vals.forEach((v,idx)=>{
+
           const val = sliders[idx].value;
-          v.textContent = idx === 1 ? val + "%" : val;
+
+          v.textContent =
+          idx===1 ? val+"%" : val;
+
         });
+
       }
+
     }
+
   });
+
 });
 
 function getColor(i){
-  const c=['#d73027','#fc8d59','#fee08b','#91cf60','#4575b4','#74add1','#f46d43','#66c2a5'];
+
+  const c = [
+
+    '#d73027',
+    '#fc8d59',
+    '#fee08b',
+    '#91cf60',
+    '#4575b4',
+    '#74add1',
+    '#f46d43',
+    '#66c2a5'
+
+  ];
+
   return c[i%c.length];
+
 }
 
 function toggleLayerPanel(){
-  const p=document.getElementById('layerPanel');
-  p.style.display=(p.style.display==='none'||p.style.display==='')?'block':'none';
+
+  const p =
+  document.getElementById('layerPanel');
+
+  p.style.display =
+
+  (p.style.display==='none'||p.style.display==='')
+
+  ? 'block'
+  : 'none';
+
 }
 
-document.getElementById('resetView').addEventListener('click',()=>map.setView([19.95,99.80],12));
+document
+.getElementById('resetView')
 
-let locateMarker=null, locating=false;
-document.getElementById('locateMe').addEventListener('click',()=>{
-  if(locating){ if(locateMarker) map.removeLayer(locateMarker); locating=false; }
-  else{ map.locate({setView:true,maxZoom:16}); locating=true; }
+.addEventListener('click',()=>{
+
+  map.setView([19.95,99.80],12);
+
 });
+
+let locateMarker = null;
+let locating = false;
+
+document
+.getElementById('locateMe')
+
+.addEventListener('click',()=>{
+
+  if(locating){
+
+    if(locateMarker)
+    map.removeLayer(locateMarker);
+
+    locating = false;
+
+  }
+
+  else{
+
+    map.locate({
+      setView:true,
+      maxZoom:16
+    });
+
+    locating = true;
+
+  }
+
+});
+
 map.on('locationfound',e=>{
-  if(locateMarker) map.removeLayer(locateMarker);
-  locateMarker=L.marker(e.latlng).addTo(map).bindPopup("ตำแหน่งของคุณ").openPopup();
+
+  if(locateMarker)
+  map.removeLayer(locateMarker);
+
+  locateMarker =
+  L.marker(e.latlng)
+
+  .addTo(map)
+
+  .bindPopup("ตำแหน่งของคุณ")
+
+  .openPopup();
+
 });
 
 map.on('mousemove',e=>{
-  const utm=proj4("+proj=utm +zone=47 +ellps=WGS84 +units=m +no_defs",[e.latlng.lng,e.latlng.lat]);
-  document.getElementById('coordinate').innerText=`E: ${utm[0].toFixed(2)}, N: ${utm[1].toFixed(2)}`;
+
+  const utm = proj4(
+
+    "+proj=utm +zone=47 +ellps=WGS84 +units=m +no_defs",
+
+    [e.latlng.lng,e.latlng.lat]
+
+  );
+
+  document.getElementById('coordinate')
+
+  .innerText =
+
+  `E: ${utm[0].toFixed(2)},
+   N: ${utm[1].toFixed(2)}`;
+
 });
 
-L.control.scale({position:'bottomright',imperial:false}).addTo(map);
+L.control.scale({
+
+  position:'bottomright',
+  imperial:false
+
+}).addTo(map);
+
 </script>
+
 </body>
 </html>
