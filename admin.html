@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Admin WebMap</title>
 
 <style>
+
 body{
   font-family:sans-serif;
   padding:20px;
-  max-width:900px;
+  max-width:1200px;
   margin:auto;
+}
+
+h2{
+  margin-bottom:20px;
 }
 
 table{
@@ -20,141 +28,289 @@ table{
 th,td{
   border:1px solid #ccc;
   padding:8px;
+  text-align:left;
+}
+
+th{
+  background:#f3f3f3;
 }
 
 input[type="text"]{
   width:100%;
+  box-sizing:border-box;
+}
+
+input[type="number"]{
+  width:80px;
 }
 
 button{
-  padding:6px 12px;
+  padding:8px 14px;
   cursor:pointer;
+  border:none;
+  border-radius:6px;
+  background:#1976d2;
+  color:white;
 }
+
+button:hover{
+  opacity:0.9;
+}
+
+.delete-btn{
+  background:#d32f2f;
+}
+
+.topbar{
+  margin-bottom:15px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.note{
+  margin-top:15px;
+  color:#666;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h2>จัดการ Layer</h2>
+<h2>จัดการ Layer WebMap</h2>
+
+<div class="topbar">
+
+<button onclick="addRow()">
++ เพิ่ม Layer
+</button>
+
+<button onclick="saveConfig()">
+💾 Save Config
+</button>
+
+</div>
 
 <table id="tbl">
+
 <thead>
+
 <tr>
-<th>ชื่อ</th>
-<th>ไฟล์</th>
+
+<th>ชื่อ Layer</th>
+<th>ไฟล์ KML</th>
+<th>หมวดหมู่</th>
 <th>สี</th>
 <th>Opacity</th>
 <th>Visible</th>
 <th>ลบ</th>
+
 </tr>
+
 </thead>
 
 <tbody></tbody>
+
 </table>
 
-<br>
+<div class="note">
 
-<button onclick="addRow()">+ เพิ่ม Layer</button>
-<button onclick="saveConfig()">💾 Save Config</button>
+หลังจากกด Save Config ให้เอาไฟล์ config.json ที่โหลดได้
+ไปแทนไฟล์เดิมในโฟลเดอร์ layers
+
+</div>
 
 <script>
 
 let configs=[];
 
-fetch("config.json")
+fetch("layers/config.json")
+
 .then(r=>r.json())
+
 .then(data=>{
+
   configs=data;
+
   renderTable();
+
+})
+
+.catch(err=>{
+
+  alert("โหลด config ไม่ได้");
+
+  console.log(err);
+
 });
 
 function renderTable(){
 
-  const tbody=document.querySelector("#tbl tbody");
+  const tbody =
+  document.querySelector("#tbl tbody");
+
   tbody.innerHTML="";
 
   configs.forEach((c,i)=>{
 
-    tbody.innerHTML+=`
+    tbody.innerHTML += `
+
     <tr>
 
       <td>
-        <input value="${c.name}"
-        onchange="configs[${i}].name=this.value">
+
+        <input type="text"
+
+        value="${c.name || ''}"
+
+        onchange="
+        configs[${i}].name=this.value
+        ">
+
       </td>
 
       <td>
-        <input value="${c.file}"
-        onchange="configs[${i}].file=this.value">
+
+        <input type="text"
+
+        value="${c.file || ''}"
+
+        onchange="
+        configs[${i}].file=this.value
+        ">
+
       </td>
 
       <td>
-        <input type="color" value="${c.color}"
-        onchange="configs[${i}].color=this.value">
+
+        <input type="text"
+
+        value="${c.group || ''}"
+
+        onchange="
+        configs[${i}].group=this.value
+        ">
+
       </td>
 
       <td>
+
+        <input type="color"
+
+        value="${c.color || '#ff0000'}"
+
+        onchange="
+        configs[${i}].color=this.value
+        ">
+
+      </td>
+
+      <td>
+
         <input type="number"
+
         min="0"
         max="1"
         step="0.1"
-        value="${c.opacity}"
-        onchange="configs[${i}].opacity=parseFloat(this.value)">
+
+        value="${c.opacity || 0.6}"
+
+        onchange="
+        configs[${i}].opacity=parseFloat(this.value)
+        ">
+
       </td>
 
       <td>
+
         <input type="checkbox"
+
         ${c.visible ? "checked":""}
-        onchange="configs[${i}].visible=this.checked">
+
+        onchange="
+        configs[${i}].visible=this.checked
+        ">
+
       </td>
 
       <td>
-        <button onclick="deleteRow(${i})">ลบ</button>
+
+        <button class="delete-btn"
+
+        onclick="deleteRow(${i})">
+
+        ลบ
+
+        </button>
+
       </td>
 
     </tr>
+
     `;
+
   });
+
 }
 
 function addRow(){
 
   configs.push({
-    name:"layerใหม่",
+
+    name:"Layer ใหม่",
+
     file:"file.kml",
+
+    group:"อื่นๆ",
+
     color:"#ff0000",
+
     opacity:0.6,
-    visible:true,
-    type:"polygon"
+
+    visible:true
+
   });
 
   renderTable();
+
 }
 
 function deleteRow(i){
-  configs.splice(i,1);
-  renderTable();
+
+  if(confirm("ลบ Layer นี้ ?")){
+
+    configs.splice(i,1);
+
+    renderTable();
+
+  }
+
 }
 
 function saveConfig(){
 
-  const text=
-    JSON.stringify(configs,null,2);
+  const text =
+  JSON.stringify(configs,null,2);
 
-  const blob=
-    new Blob([text],
-    {type:"application/json"});
+  const blob =
+  new Blob([text],{
+    type:"application/json"
+  });
 
-  const a=
-    document.createElement("a");
+  const a =
+  document.createElement("a");
 
-  a.href=
-    URL.createObjectURL(blob);
+  a.href =
+  URL.createObjectURL(blob);
 
   a.download="config.json";
 
   a.click();
+
 }
+
 </script>
 
 </body>
