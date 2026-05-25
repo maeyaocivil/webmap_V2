@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -28,11 +27,7 @@ table{
 th,td{
   border:1px solid #ccc;
   padding:8px;
-  text-align:left;
-}
-
-th{
-  background:#f3f3f3;
+  text-align:center;
 }
 
 input[type="text"]{
@@ -40,48 +35,40 @@ input[type="text"]{
   box-sizing:border-box;
 }
 
-input[type="number"]{
-  width:80px;
-}
-
 button{
   padding:8px 14px;
   cursor:pointer;
-  border:none;
-  border-radius:6px;
-  background:#1976d2;
-  color:white;
-}
-
-button:hover{
-  opacity:0.9;
-}
-
-.delete-btn{
-  background:#d32f2f;
-}
-
-.topbar{
-  margin-bottom:15px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.note{
-  margin-top:15px;
-  color:#666;
+  margin-right:5px;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<h2>จัดการ Layer WebMap</h2>
+<h2>จัดการ Layer</h2>
 
-<div class="topbar">
+<table id="tbl">
+
+<thead>
+<tr>
+
+<th>ชื่อ</th>
+<th>ไฟล์ KML</th>
+<th>หมวดหมู่</th>
+<th>สี</th>
+<th>Opacity</th>
+<th>Visible</th>
+<th>ลบ</th>
+
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<br>
 
 <button onclick="addRow()">
 + เพิ่ม Layer
@@ -91,64 +78,23 @@ button:hover{
 💾 Save Config
 </button>
 
-</div>
-
-<table id="tbl">
-
-<thead>
-
-<tr>
-
-<th>ชื่อ Layer</th>
-<th>ไฟล์ KML</th>
-<th>หมวดหมู่</th>
-<th>สี</th>
-<th>Opacity</th>
-<th>Visible</th>
-<th>ลบ</th>
-
-</tr>
-
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-<div class="note">
-
-หลังจากกด Save Config ให้เอาไฟล์ config.json ที่โหลดได้
-ไปแทนไฟล์เดิมในโฟลเดอร์ layers
-
-</div>
-
 <script>
 
 let configs=[];
 
 fetch("layers/config.json")
-
 .then(r=>r.json())
-
 .then(data=>{
 
   configs=data;
 
   renderTable();
 
-})
-
-.catch(err=>{
-
-  alert("โหลด config ไม่ได้");
-
-  console.log(err);
-
 });
 
 function renderTable(){
 
-  const tbody =
+  const tbody=
   document.querySelector("#tbl tbody");
 
   tbody.innerHTML="";
@@ -160,91 +106,51 @@ function renderTable(){
     <tr>
 
       <td>
-
-        <input type="text"
-
-        value="${c.name || ''}"
-
-        onchange="
-        configs[${i}].name=this.value
-        ">
-
+      <input
+      value="${c.name || ''}"
+      onchange="configs[${i}].name=this.value">
       </td>
 
       <td>
-
-        <input type="text"
-
-        value="${c.file || ''}"
-
-        onchange="
-        configs[${i}].file=this.value
-        ">
-
+      <input
+      value="${c.file || ''}"
+      onchange="configs[${i}].file=this.value">
       </td>
 
       <td>
-
-        <input type="text"
-
-        value="${c.group || ''}"
-
-        onchange="
-        configs[${i}].group=this.value
-        ">
-
+      <input
+      value="${c.group || ''}"
+      onchange="configs[${i}].group=this.value">
       </td>
 
       <td>
-
-        <input type="color"
-
-        value="${c.color || '#ff0000'}"
-
-        onchange="
-        configs[${i}].color=this.value
-        ">
-
+      <input
+      type="color"
+      value="${c.color || '#ff0000'}"
+      onchange="configs[${i}].color=this.value">
       </td>
 
       <td>
-
-        <input type="number"
-
-        min="0"
-        max="1"
-        step="0.1"
-
-        value="${c.opacity || 0.6}"
-
-        onchange="
-        configs[${i}].opacity=parseFloat(this.value)
-        ">
-
+      <input
+      type="number"
+      min="0"
+      max="1"
+      step="0.1"
+      value="${c.opacity || 0.6}"
+      onchange="configs[${i}].opacity=parseFloat(this.value)">
       </td>
 
       <td>
-
-        <input type="checkbox"
-
-        ${c.visible ? "checked":""}
-
-        onchange="
-        configs[${i}].visible=this.checked
-        ">
-
+      <input
+      type="checkbox"
+      ${c.visible ? "checked" : ""}
+      onchange="configs[${i}].visible=this.checked">
       </td>
 
       <td>
-
-        <button class="delete-btn"
-
-        onclick="deleteRow(${i})">
-
-        ลบ
-
-        </button>
-
+      <button onclick="deleteRow(${i})">
+      ลบ
+      </button>
       </td>
 
     </tr>
@@ -259,16 +165,11 @@ function addRow(){
 
   configs.push({
 
-    name:"Layer ใหม่",
-
+    name:"Layerใหม่",
     file:"file.kml",
-
-    group:"อื่นๆ",
-
+    group:"หมวดใหม่",
     color:"#ff0000",
-
     opacity:0.6,
-
     visible:true
 
   });
@@ -279,13 +180,9 @@ function addRow(){
 
 function deleteRow(i){
 
-  if(confirm("ลบ Layer นี้ ?")){
+  configs.splice(i,1);
 
-    configs.splice(i,1);
-
-    renderTable();
-
-  }
+  renderTable();
 
 }
 
@@ -295,9 +192,10 @@ function saveConfig(){
   JSON.stringify(configs,null,2);
 
   const blob =
-  new Blob([text],{
-    type:"application/json"
-  });
+  new Blob(
+    [text],
+    {type:"application/json"}
+  );
 
   const a =
   document.createElement("a");
