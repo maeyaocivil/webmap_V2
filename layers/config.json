@@ -1,0 +1,18 @@
+[
+  {
+    "file": "กิจการอันตราย.kml",
+    "name": "กิจการอันตราย",
+    "color": "#ff0000",
+    "weight": 2,
+    "fillOpacity": 0.6,
+    "visible": true
+  },
+  {
+    "file": "ข้อมูลเส้นทางเบื้องต้น.kml",
+    "name": "ข้อมูลเส้นทางเบื้องต้น",
+    "color": "#0000ff",
+    "weight": 3,
+    "fillOpacity": 0.5,
+    "visible": false
+  }
+]
