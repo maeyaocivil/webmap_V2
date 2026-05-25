@@ -43,7 +43,7 @@ html, body {
   cursor:pointer;
 }
 
-/* zoom */
+/* ย้ายปุ่ม + - */
 
 .leaflet-top.leaflet-left{
   top:90px !important;
@@ -84,6 +84,7 @@ html, body {
   padding:5px 10px;
   font-size:15px;
   cursor:pointer;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
 }
 
 /* panel */
@@ -96,9 +97,9 @@ html, body {
   background:white;
   border:1px solid #aaa;
   border-radius:8px;
-  padding:10px;
+  padding:8px;
   width:300px;
-  max-height:500px;
+  max-height:420px;
   overflow-y:auto;
   display:none;
   box-shadow:0 0 6px rgba(0,0,0,0.2);
@@ -106,15 +107,10 @@ html, body {
 
 .group-title{
   margin-top:10px;
-  padding:5px;
-  background:#f0f0f0;
-  border-radius:5px;
   font-weight:bold;
-}
-
-.layer-item{
-  margin-left:10px;
-  margin-top:5px;
+  color:#444;
+  border-bottom:1px solid #ddd;
+  padding-bottom:3px;
 }
 
 /* ปุ่มล่าง */
@@ -137,6 +133,12 @@ button{
   cursor:pointer;
 }
 
+button:hover{
+  background:#e8e8e8;
+}
+
+/* coordinate */
+
 .coordinate{
   position:absolute;
   bottom:10px;
@@ -149,6 +151,14 @@ button{
   font-size:16px;
 }
 
+/* scale */
+
+.leaflet-control-scale{
+  right:10px !important;
+  left:auto !important;
+  bottom:10px !important;
+}
+
 </style>
 
 </head>
@@ -157,7 +167,9 @@ button{
 
 <div class="logo"
 onclick="window.open('https://www.maeyao.go.th/','_blank')">
+
 <img src="assets/logo.png">
+
 </div>
 
 <div class="compass">
@@ -166,7 +178,9 @@ onclick="window.open('https://www.maeyao.go.th/','_blank')">
 
 <button class="toggle-panel-btn"
 onclick="toggleLayerPanel()">
+
 ชั้นข้อมูล
+
 </button>
 
 <div class="layer-panel" id="layerPanel">
@@ -174,19 +188,14 @@ onclick="toggleLayerPanel()">
 <b>แผนที่ฐาน</b><br>
 
 <label>
-<input type="radio"
-name="base"
-value="osm"
-checked>
+<input type="radio" name="base" value="osm" checked>
 OpenStreetMap
 </label>
 
 <br>
 
 <label>
-<input type="radio"
-name="base"
-value="sat">
+<input type="radio" name="base" value="sat">
 Google Satellite
 </label>
 
@@ -209,7 +218,9 @@ Google Satellite
 </div>
 
 <div class="coordinate" id="coordinate">
+
 E: -, N: -
+
 </div>
 
 <div id="map"></div>
@@ -237,8 +248,7 @@ const sat = L.tileLayer(
 {maxZoom:20}
 );
 
-document
-.querySelectorAll('input[name="base"]')
+document.querySelectorAll('input[name="base"]')
 .forEach(r=>{
 
   r.addEventListener('change',()=>{
@@ -260,20 +270,23 @@ fetch("layers/config.json")
 
 .then(r=>r.json())
 
-.then(configs=>{
+.then(files=>{
 
   const layerList =
   document.getElementById("layerList");
 
   const groups = {};
 
-  configs.forEach((cfg,i)=>{
+  files.forEach(cfg=>{
 
-    if(!groups[cfg.group]){
-      groups[cfg.group]=[];
+    const group =
+    cfg.group || "ทั่วไป";
+
+    if(!groups[group]){
+      groups[group]=[];
     }
 
-    groups[cfg.group].push(cfg);
+    groups[group].push(cfg);
 
   });
 
@@ -283,64 +296,31 @@ fetch("layers/config.json")
     document.createElement("div");
 
     title.className="group-title";
+
     title.innerText=groupName;
 
     layerList.appendChild(title);
 
     groups[groupName].forEach((cfg,i)=>{
 
-      const color =
-      cfg.color || "#ff0000";
-
       const layer =
       omnivore.kml(
-
-        "layers/" + cfg.file,
-
-        null,
-
-        L.geoJson(null,{
-
-          style:()=>({
-
-            color:color,
-            weight:2,
-            fillColor:color,
-            fillOpacity:cfg.opacity || 0.6
-
-          }),
-
-          pointToLayer:(f,latlng)=>
-
-          L.circleMarker(latlng,{
-
-            radius:6,
-            color:color,
-            fillColor:color,
-            fillOpacity:cfg.opacity || 0.6
-
-          })
-
-        })
-
+        "layers/" + cfg.file
       );
 
       const div =
       document.createElement("div");
 
-      div.className="layer-item";
-
       div.innerHTML=`
 
       <label>
-
       <input type="checkbox">
-
       ${cfg.name}
-
       </label>
 
       `;
+
+      layerList.appendChild(div);
 
       const chk =
       div.querySelector("input");
@@ -367,8 +347,6 @@ fetch("layers/config.json")
 
       });
 
-      layerList.appendChild(div);
-
     });
 
   });
@@ -382,8 +360,7 @@ function toggleLayerPanel(){
 
   p.style.display =
 
-  (p.style.display==='none' ||
-   p.style.display==='')
+  (p.style.display==='none'||p.style.display==='')
 
   ? 'block'
   : 'none';
@@ -400,24 +377,39 @@ document
 });
 
 let locateMarker = null;
+let locating = false;
 
 document
 .getElementById('locateMe')
 
 .addEventListener('click',()=>{
 
-  map.locate({
-    setView:true,
-    maxZoom:16
-  });
+  if(locating){
+
+    if(locateMarker)
+    map.removeLayer(locateMarker);
+
+    locating = false;
+
+  }
+
+  else{
+
+    map.locate({
+      setView:true,
+      maxZoom:16
+    });
+
+    locating = true;
+
+  }
 
 });
 
 map.on('locationfound',e=>{
 
-  if(locateMarker){
-    map.removeLayer(locateMarker);
-  }
+  if(locateMarker)
+  map.removeLayer(locateMarker);
 
   locateMarker =
   L.marker(e.latlng)
@@ -440,8 +432,7 @@ map.on('mousemove',e=>{
 
   );
 
-  document
-  .getElementById('coordinate')
+  document.getElementById('coordinate')
 
   .innerText =
 
@@ -451,8 +442,10 @@ map.on('mousemove',e=>{
 });
 
 L.control.scale({
+
   position:'bottomright',
   imperial:false
+
 }).addTo(map);
 
 </script>
