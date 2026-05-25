@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Admin WebMap</title>
+
+<style>
+body{
+  font-family:sans-serif;
+  padding:20px;
+  max-width:900px;
+  margin:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  border:1px solid #ccc;
+  padding:8px;
+}
+
+input[type="text"]{
+  width:100%;
+}
+
+button{
+  padding:6px 12px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h2>จัดการ Layer</h2>
+
+<table id="tbl">
+<thead>
+<tr>
+<th>ชื่อ</th>
+<th>ไฟล์</th>
+<th>สี</th>
+<th>Opacity</th>
+<th>Visible</th>
+<th>ลบ</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+</table>
+
+<br>
+
+<button onclick="addRow()">+ เพิ่ม Layer</button>
+<button onclick="saveConfig()">💾 Save Config</button>
+
+<script>
+
+let configs=[];
+
+fetch("config.json")
+.then(r=>r.json())
+.then(data=>{
+  configs=data;
+  renderTable();
+});
+
+function renderTable(){
+
+  const tbody=document.querySelector("#tbl tbody");
+  tbody.innerHTML="";
+
+  configs.forEach((c,i)=>{
+
+    tbody.innerHTML+=`
+    <tr>
+
+      <td>
+        <input value="${c.name}"
+        onchange="configs[${i}].name=this.value">
+      </td>
+
+      <td>
+        <input value="${c.file}"
+        onchange="configs[${i}].file=this.value">
+      </td>
+
+      <td>
+        <input type="color" value="${c.color}"
+        onchange="configs[${i}].color=this.value">
+      </td>
+
+      <td>
+        <input type="number"
+        min="0"
+        max="1"
+        step="0.1"
+        value="${c.opacity}"
+        onchange="configs[${i}].opacity=parseFloat(this.value)">
+      </td>
+
+      <td>
+        <input type="checkbox"
+        ${c.visible ? "checked":""}
+        onchange="configs[${i}].visible=this.checked">
+      </td>
+
+      <td>
+        <button onclick="deleteRow(${i})">ลบ</button>
+      </td>
+
+    </tr>
+    `;
+  });
+}
+
+function addRow(){
+
+  configs.push({
+    name:"layerใหม่",
+    file:"file.kml",
+    color:"#ff0000",
+    opacity:0.6,
+    visible:true,
+    type:"polygon"
+  });
+
+  renderTable();
+}
+
+function deleteRow(i){
+  configs.splice(i,1);
+  renderTable();
+}
+
+function saveConfig(){
+
+  const text=
+    JSON.stringify(configs,null,2);
+
+  const blob=
+    new Blob([text],
+    {type:"application/json"});
+
+  const a=
+    document.createElement("a");
+
+  a.href=
+    URL.createObjectURL(blob);
+
+  a.download="config.json";
+
+  a.click();
+}
+</script>
+
+</body>
+</html>
